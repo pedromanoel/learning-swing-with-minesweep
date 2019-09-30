@@ -3,15 +3,31 @@
  */
 package codes.pedromanoel
 
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
+import org.assertj.swing.core.GenericTypeMatcher
+import org.assertj.swing.finder.WindowFinder.findFrame
+import org.assertj.swing.fixture.FrameFixture
+import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase
+import org.junit.Test
+import java.awt.Frame
 
-class AppTest {
+class AppTest : AssertJSwingJUnitTestCase() {
+    private val frame: FrameFixture by lazy {
+        findFrame(AppFrameMatcher()).using(robot())
+    }
+
+    override fun onSetUp() {
+        main(arrayOf())
+    }
 
     @Test
     fun testAppHasAGreeting() {
-        assertThat(App().greeting)
-            .describedAs("app should have a greeting")
-            .isNotNull()
+        frame.requireVisible()
     }
+}
+
+private class AppFrameMatcher : GenericTypeMatcher<Frame>(Frame::class.java) {
+
+    override fun isMatching(frame: Frame?) =
+        frame?.title == "Kotlin Minesweep" && frame.isVisible
+
 }

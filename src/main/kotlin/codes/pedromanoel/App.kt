@@ -3,13 +3,28 @@
  */
 package codes.pedromanoel
 
-class App {
-    val greeting: String
-        get() {
-            return "Hello world."
-        }
+import java.awt.EventQueue
+import javax.swing.*
+
+class AppFrame(val appTitle: String) : JFrame() {
+
+    init {
+        createUI()
+    }
+
+    private fun createUI() {
+        setTitle(appTitle)
+
+        defaultCloseOperation = EXIT_ON_CLOSE
+        setSize(300, 200)
+        setLocationRelativeTo(null)
+    }
+
 }
 
 fun main(args: Array<String>) {
-    println(App().greeting)
+    EventQueue.invokeLater {
+        val appFrame = AppFrame("Kotlin Minesweep")
+        appFrame.isVisible = true
+    }
 }
