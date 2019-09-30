@@ -16,12 +16,11 @@ dependencies {
     testImplementation("org.assertj", "assertj-swing-junit", "3.9.2")
     testImplementation("junit", "junit", "4.12")
     testRuntimeOnly("org.junit.vintage", "junit-vintage-engine", "5.5.2")
-
 }
 
 tasks.test {
     useJUnitPlatform()
-    testLogging { events("passed", "skipped", "failed")}
+    testLogging { events("passed", "skipped", "failed") }
 }
 
 application {
