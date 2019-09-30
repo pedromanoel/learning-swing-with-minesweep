@@ -3,12 +3,15 @@
  */
 package codes.pedromanoel
 
-import kotlin.test.Test
-import kotlin.test.assertNotNull
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
 
 class AppTest {
-    @Test fun testAppHasAGreeting() {
-        val classUnderTest = App()
-        assertNotNull(classUnderTest.greeting, "app should have a greeting")
+
+    @Test
+    fun testAppHasAGreeting() {
+        assertThat(App().greeting)
+            .describedAs("app should have a greeting")
+            .isNotNull()
     }
 }
