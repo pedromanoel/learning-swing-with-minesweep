@@ -18,16 +18,10 @@ class SquareMinefield(dimensions: Dimensions) {
     }
 
     private fun cellAbove(position: Position): Cell? =
-        rows[Position(
-            row = position.row - 1,
-            column = position.column
-        )]
+        rows[position.stepUp()]
 
     private fun cellLeft(position: Position): Cell? =
-        rows[Position(
-            row = position.row,
-            column = position.column - 1
-        )]
+        rows[position.stepLeft()]
 
     fun cellAt(position: Position) =
         rows[position] ?: throw IndexOutOfBoundsException()

@@ -1,10 +1,7 @@
 package codes.pedromanoel.domain
 
 class Cell(
-    val position: Position = Position(
-        0,
-        0
-    ),
+    val position: Position = Position(0, 0),
     adjacentCells: List<Cell> = emptyList(),
     var exploded: Boolean = false,
     var adjacentMines: Int = 0,
