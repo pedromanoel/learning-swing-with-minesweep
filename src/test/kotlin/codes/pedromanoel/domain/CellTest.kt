@@ -6,42 +6,47 @@ import org.junit.jupiter.api.Test
 class CellTest {
 
     @Test
-    fun reveal_empty_cell() {
-        Cell()
-            .also { assertThat(it.exploded).isFalse() }
-            .also { it.reveal() }
-            .also { assertThat(it.exploded).isFalse() }
+    fun cell_is_created_concealed() {
+        assertThat(Cell(Position.origin()).status).isEqualTo(CellStatus.concealed())
     }
 
     @Test
-    fun reveal_mined_cell() {
-        Cell(mined = true)
-            .also { assertThat(it.exploded).isFalse() }
-            .also { it.reveal() }
-            .also { assertThat(it.exploded).isTrue() }
-    }
-
-    @Test
-    fun setup_adjacent_mines_transitively() {
-        val firstCell = Cell()
-        val secondCell = Cell(adjacentCells = listOf(firstCell))
+    fun cells_are_adjacent_to_one_another() {
+        val firstCell = Cell(Position.origin())
+        val secondCell = Cell(Position.origin(), adjacentCells = listOf(firstCell))
 
         assertThat(secondCell.adjacentCells).containsExactly(firstCell)
         assertThat(firstCell.adjacentCells).containsExactly(secondCell)
     }
 
     @Test
+    fun reveal_empty_Cell() {
+        val cell = Cell(Position.origin())
+            .also(Cell::reveal)
+
+        assertThat(cell.status).isEqualTo(CellStatus.revealed(0))
+    }
+
+    @Test
     fun reveal_empty_cell_counts_adjacent_mines() {
         val adjacentCells = listOf(
-            Cell(mined = false),
-            Cell(mined = true),
-            Cell(mined = false),
-            Cell(mined = true)
+            Cell(Position.origin(), mined = false),
+            Cell(Position.origin(), mined = true),
+            Cell(Position.origin(), mined = false),
+            Cell(Position.origin(), mined = true)
         )
 
-        Cell(adjacentCells = adjacentCells)
-            .also { assertThat(it.adjacentMines).isEqualTo(0) }
-            .also { it.reveal() }
-            .also { assertThat(it.adjacentMines).isEqualTo(2) }
+        val cell = Cell(Position.origin(), adjacentCells = adjacentCells)
+            .also(Cell::reveal)
+
+        assertThat(cell.status).isEqualTo(CellStatus.revealed(2))
+    }
+
+    @Test
+    fun reveal_mined_Cell() {
+        val cell = Cell(Position.origin(), mined = true)
+            .also(Cell::reveal)
+
+        assertThat(cell.status).isEqualTo(CellStatus.exploded())
     }
 }
