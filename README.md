@@ -7,8 +7,8 @@ Java.
 
 - Minefield
 - Cells
-- Adjacent cells
+- Surrounding cells
 - Reveal cell
-- Adjacent mines
+- Surrounding mines
 - Contains mine
 - Distribute mines on the minefield

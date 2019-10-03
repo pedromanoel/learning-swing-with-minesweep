@@ -12,7 +12,7 @@ class SquareMinefield(
                 Cell(
                     position = position,
                     mined = mineDeployedAt(position),
-                    adjacentCells = cellsAdjacentTo(position)
+                    surroundingCells = cellsSurrounding(position)
                 )
         }
     }
@@ -20,7 +20,7 @@ class SquareMinefield(
     private fun mineDeployedAt(position: Position) =
         mineDeployment.contains(position)
 
-    private fun cellsAdjacentTo(position: Position): List<Cell> {
+    private fun cellsSurrounding(position: Position): List<Cell> {
         val positionAbove = position.stepUp()
         val positionLeft = position.stepLeft()
 

@@ -1,6 +1,6 @@
 package codes.pedromanoel.domain
 
-data class CellStatus(val mineStatus: MineStatus, val adjacentMines: Int) {
+data class CellStatus(val mineStatus: MineStatus, val numberOfSurroundingMines: Int) {
 
     companion object Factory {
         fun concealed(): CellStatus =
@@ -9,7 +9,7 @@ data class CellStatus(val mineStatus: MineStatus, val adjacentMines: Int) {
         fun exploded(): CellStatus =
             CellStatus(MineStatus.EXPLODED, 0)
 
-        fun revealed(adjacentMines: Int): CellStatus =
-            CellStatus(MineStatus.REVEALED, adjacentMines)
+        fun revealed(numberOfSurroundingMines: Int): CellStatus =
+            CellStatus(MineStatus.REVEALED, numberOfSurroundingMines)
     }
 }

@@ -11,12 +11,12 @@ class CellTest {
     }
 
     @Test
-    fun cells_are_adjacent_to_one_another() {
+    fun cells_are_surrounding_to_one_another() {
         val firstCell = Cell(Position.origin())
-        val secondCell = Cell(Position.origin(), adjacentCells = listOf(firstCell))
+        val secondCell = Cell(Position.origin(), surroundingCells = listOf(firstCell))
 
-        assertThat(secondCell.adjacentCells).containsExactly(firstCell)
-        assertThat(firstCell.adjacentCells).containsExactly(secondCell)
+        assertThat(secondCell.surroundingCells).containsExactly(firstCell)
+        assertThat(firstCell.surroundingCells).containsExactly(secondCell)
     }
 
     @Test
@@ -28,25 +28,25 @@ class CellTest {
     }
 
     @Test
-    fun reveal_empty_cell_counts_adjacent_mines() {
-        val adjacentCells = listOf(
+    fun reveal_empty_cell_counts_surrounding_mines() {
+        val surroundingCells = listOf(
             Cell(Position.origin(), mined = false),
             Cell(Position.origin(), mined = true),
             Cell(Position.origin(), mined = false),
             Cell(Position.origin(), mined = true)
         )
 
-        val cell = Cell(Position.origin(), adjacentCells = adjacentCells)
+        val cell = Cell(Position.origin(), surroundingCells = surroundingCells)
             .also(Cell::reveal)
 
         assertThat(cell.status).isEqualTo(CellStatus.revealed(2))
     }
 
     @Test
-    fun reveals_adjacent_cells_when_surroundings_are_clear() {
+    fun reveals_surrounding_cells_when_surroundings_are_clear() {
         val cell = Cell(
             position = Position(1, 1),
-            adjacentCells = listOf(
+            surroundingCells = listOf(
                 Cell(Position(1, 2)),
                 Cell(Position(2, 1))
             )
@@ -55,7 +55,7 @@ class CellTest {
         cell.reveal()
 
         val cellStatus = cell
-            .adjacentCells
+            .surroundingCells
             .map { it.status.mineStatus }
 
         assertThat(cellStatus).containsExactly(
@@ -65,10 +65,10 @@ class CellTest {
     }
 
     @Test
-    fun do_not_reveal_adjacent_cells_when_surroundings_are_not_clear() {
+    fun do_not_reveal_surrounding_cells_when_surroundings_are_not_clear() {
         val cell = Cell(
             position = Position(1, 1),
-            adjacentCells = listOf(
+            surroundingCells = listOf(
                 Cell(Position(1, 2)),
                 Cell(Position(2, 1), mined = true)
             )
@@ -77,7 +77,7 @@ class CellTest {
         cell.reveal()
 
         val cellStatus = cell
-            .adjacentCells
+            .surroundingCells
             .map { it.status.mineStatus }
 
         assertThat(cellStatus).containsExactly(

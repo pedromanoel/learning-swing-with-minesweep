@@ -12,7 +12,7 @@ class SquareMinefieldTest {
             Dimensions(1, 1)
         )
 
-        assertThat(minefield.cellAt(Position(1, 1)).adjacentCells).isEmpty()
+        assertThat(minefield.cellAt(Position(1, 1)).surroundingCells).isEmpty()
     }
 
     @Test
@@ -25,20 +25,20 @@ class SquareMinefieldTest {
     }
 
     @Test
-    fun single_row_square_minefield_has_adjacent_cells_set() {
+    fun single_row_square_minefield_has_surrounding_cells_set() {
         val minefield = SquareMinefield(Dimensions(height = 1, width = 3))
 
         val left = minefield.cellAt(Position(1, 1))
         val middle = minefield.cellAt(Position(1, 2))
         val right = minefield.cellAt(Position(1, 3))
 
-        assertThat(left.adjacentCells).containsExactly(middle)
-        assertThat(middle.adjacentCells).containsExactly(left, right)
-        assertThat(right.adjacentCells).containsExactly(middle)
+        assertThat(left.surroundingCells).containsExactly(middle)
+        assertThat(middle.surroundingCells).containsExactly(left, right)
+        assertThat(right.surroundingCells).containsExactly(middle)
     }
 
     @Test
-    fun two_dimensions_minefield_has_adjacent_cells_set() {
+    fun two_dimensions_minefield_has_surrounding_cells_set() {
         val minefield = SquareMinefield(Dimensions(height = 3, width = 3))
 
         val middleCell = minefield.cellAt(Position(2, 2))
@@ -46,7 +46,7 @@ class SquareMinefieldTest {
         // 1,1  1,2  1,3
         // 2,1 (2,2) 2,3
         // 3,1  3,2  3,3
-        assertThat(middleCell.adjacentCells)
+        assertThat(middleCell.surroundingCells)
             .containsExactly(
                 minefield.cellAt(Position(1, 1)),
                 minefield.cellAt(Position(1, 2)),

@@ -2,35 +2,35 @@ package codes.pedromanoel.domain
 
 class Cell(
     val position: Position,
-    adjacentCells: List<Cell> = emptyList(),
+    surroundingCells: List<Cell> = emptyList(),
     private val mined: Boolean = false
 ) {
     var status = CellStatus.concealed()
 
-    val adjacentCells: List<Cell> get() = _adjacentCells
+    val surroundingCells: List<Cell> get() = _surroundingCells
 
-    private val _adjacentCells: ArrayList<Cell> = ArrayList()
+    private val _surroundingCells: ArrayList<Cell> = ArrayList()
 
     init {
-        this._adjacentCells.addAll(adjacentCells)
-        this._adjacentCells.forEach { it._adjacentCells.add(this) }
+        this._surroundingCells.addAll(surroundingCells)
+        this._surroundingCells.forEach { it._surroundingCells.add(this) }
     }
 
     fun reveal() {
         status = when {
             mined -> CellStatus.exploded()
-            else -> CellStatus.revealed(adjacentCells.count { it.mined })
+            else -> CellStatus.revealed(surroundingCells.count { it.mined })
         }
 
         if (surroundingsAreSafe()) {
-            revealConcealedAdjacentCells()
+            revealConcealedSurroundingCells()
         }
     }
 
-    private fun surroundingsAreSafe() = status.adjacentMines == 0
+    private fun surroundingsAreSafe() = status.numberOfSurroundingMines == 0
 
-    private fun revealConcealedAdjacentCells() {
-        adjacentCells
+    private fun revealConcealedSurroundingCells() {
+        surroundingCells
             .filter { it.status.mineStatus == MineStatus.CONCEALED }
             .forEach(Cell::reveal)
     }
