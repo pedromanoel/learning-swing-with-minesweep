@@ -1,11 +1,29 @@
 package codes.pedromanoel.domain
 
-class SquareMinefield(dimensions: Dimensions) {
-    private val rows: HashMap<Position, Cell> = HashMap()
+import kotlin.random.Random
+
+class SquareMinefield(
+    dimensions: Dimensions,
+    random: Random = Random.Default,
+    numberOfMines: Int = 0
+) : Minefield {
+    val cells: List<Cell>
+        get() = cellsByPosition.values.toList()
+
+    private val cellsByPosition: HashMap<Position, Cell> = HashMap()
 
     init {
+        val minedPositions = dimensions.positions
+            .shuffled(random)
+            .take(numberOfMines)
+
         dimensions.positions.forEach { position ->
-            rows[position] = Cell(position, cellsAdjacentTo(position))
+            cellsByPosition[position] =
+                Cell(
+                    position = position,
+                    adjacentCells = cellsAdjacentTo(position),
+                    mined = minedPositions.contains(position)
+                )
         }
     }
 
@@ -18,11 +36,11 @@ class SquareMinefield(dimensions: Dimensions) {
     }
 
     private fun cellAbove(position: Position) =
-        rows[position.stepUp()]
+        cellsByPosition[position.stepUp()]
 
     private fun cellLeft(position: Position) =
-        rows[position.stepLeft()]
+        cellsByPosition[position.stepLeft()]
 
-    fun cellAt(position: Position) =
-        rows[position] ?: throw IndexOutOfBoundsException()
+    override fun cellAt(position: Position) =
+        cellsByPosition[position] ?: throw IndexOutOfBoundsException()
 }

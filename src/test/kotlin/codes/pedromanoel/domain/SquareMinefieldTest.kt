@@ -3,6 +3,7 @@ package codes.pedromanoel.domain
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import kotlin.random.Random
 
 class SquareMinefieldTest {
 
@@ -53,6 +54,26 @@ class SquareMinefieldTest {
                 minefield.cellAt(Position(2, 3)),
                 minefield.cellAt(Position(3, 2))
             )
+    }
 
+    @Test
+    fun deploy_mines_during_creation() {
+        val minefield = SquareMinefield(
+            random = Random(1),
+            numberOfMines = 1,
+            dimensions = Dimensions(2, 2)
+        )
+
+        val mineStatus = minefield.cells.map { cell ->
+            cell.reveal()
+            cell.status.mineStatus
+        }
+
+        assertThat(mineStatus).containsExactly(
+            MineStatus.REVEALED,
+            MineStatus.REVEALED,
+            MineStatus.REVEALED,
+            MineStatus.EXPLODED
+        )
     }
 }
