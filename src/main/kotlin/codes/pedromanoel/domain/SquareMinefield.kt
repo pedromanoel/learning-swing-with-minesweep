@@ -1,28 +1,18 @@
 package codes.pedromanoel.domain
 
-import kotlin.random.Random
-
 class SquareMinefield(
     dimensions: Dimensions,
-    random: Random = Random.Default,
-    numberOfMines: Int = 0
+    mineDeployment: MineDeployment = MineDeployment.empty()
 ) : Minefield {
-    val cells: List<Cell>
-        get() = cellsByPosition.values.toList()
-
     private val cellsByPosition: HashMap<Position, Cell> = HashMap()
 
     init {
-        val minedPositions = dimensions.positions
-            .shuffled(random)
-            .take(numberOfMines)
-
         dimensions.positions.forEach { position ->
             cellsByPosition[position] =
                 Cell(
                     position = position,
                     adjacentCells = cellsAdjacentTo(position),
-                    mined = minedPositions.contains(position)
+                    mined = mineDeployment.contains(position)
                 )
         }
     }
