@@ -43,6 +43,51 @@ class CellTest {
     }
 
     @Test
+    fun reveals_adjacent_cells_when_surroundings_are_clear() {
+        val cell = Cell(
+            position = Position(1, 1),
+            adjacentCells = listOf(
+                Cell(Position(1, 2)),
+                Cell(Position(2, 1))
+            )
+        )
+
+        cell.reveal()
+
+        val cellStatus = cell
+            .adjacentCells
+            .map { it.status.mineStatus }
+
+        assertThat(cellStatus).containsExactly(
+            MineStatus.REVEALED,
+            MineStatus.REVEALED
+        )
+    }
+
+    @Test
+    fun do_not_reveal_adjacent_cells_when_surroundings_are_not_clear() {
+        val cell = Cell(
+            position = Position(1, 1),
+            adjacentCells = listOf(
+                Cell(Position(1, 2)),
+                Cell(Position(2, 1), mined = true)
+            )
+        )
+
+        cell.reveal()
+
+        val cellStatus = cell
+            .adjacentCells
+            .map { it.status.mineStatus }
+
+        assertThat(cellStatus).containsExactly(
+            MineStatus.CONCEALED,
+            MineStatus.CONCEALED
+        )
+
+    }
+
+    @Test
     fun reveal_mined_Cell() {
         val cell = Cell(Position.origin(), mined = true)
             .also(Cell::reveal)

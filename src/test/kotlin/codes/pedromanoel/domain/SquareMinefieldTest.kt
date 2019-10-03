@@ -43,15 +43,19 @@ class SquareMinefieldTest {
 
         val middleCell = minefield.cellAt(Position(2, 2))
 
-        //      1,2
+        // 1,1  1,2  1,3
         // 2,1 (2,2) 2,3
-        //      3,2
+        // 3,1  3,2  3,3
         assertThat(middleCell.adjacentCells)
             .containsExactly(
+                minefield.cellAt(Position(1, 1)),
                 minefield.cellAt(Position(1, 2)),
+                minefield.cellAt(Position(1, 3)),
                 minefield.cellAt(Position(2, 1)),
                 minefield.cellAt(Position(2, 3)),
-                minefield.cellAt(Position(3, 2))
+                minefield.cellAt(Position(3, 1)),
+                minefield.cellAt(Position(3, 2)),
+                minefield.cellAt(Position(3, 3))
             )
     }
 
@@ -79,5 +83,34 @@ class SquareMinefieldTest {
             MineStatus.REVEALED,
             MineStatus.EXPLODED
         )
+    }
+
+    @Test
+    fun clear_minefield_when_all_empty_cells_are_found() {
+        // this minefield clears in one move at (1, 1)
+        //     1 2 3
+        //   +-------
+        // 1 | 0 0 0
+        // 2 | 0 1 1
+        // 3 | 0 1 *
+
+        val minefield = SquareMinefield(
+            dimensions = Dimensions(3, 3),
+            mineDeployment = MineDeployment(listOf(Position(3, 3)))
+        )
+
+        assertThat(minefield.isCleared())
+            .describedAs("minefield starts uncleared")
+            .isFalse()
+
+        minefield.cellAt(Position(2, 2)).reveal()
+        assertThat(minefield.isCleared())
+            .describedAs("minefield uncleared after one cell revealed")
+            .isFalse()
+
+        minefield.cellAt(Position(1, 1)).reveal()
+        assertThat(minefield.isCleared())
+            .describedAs("minefield cleared after all empty cells revealed")
+            .isTrue()
     }
 }

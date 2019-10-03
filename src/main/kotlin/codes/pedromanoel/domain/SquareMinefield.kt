@@ -2,7 +2,7 @@ package codes.pedromanoel.domain
 
 class SquareMinefield(
     dimensions: Dimensions,
-    mineDeployment: MineDeployment = MineDeployment.empty()
+    val mineDeployment: MineDeployment = MineDeployment.empty()
 ) : Minefield {
     private val cellsByPosition: HashMap<Position, Cell> = HashMap()
 
@@ -11,26 +11,39 @@ class SquareMinefield(
             cellsByPosition[position] =
                 Cell(
                     position = position,
-                    adjacentCells = cellsAdjacentTo(position),
-                    mined = mineDeployment.contains(position)
+                    mined = mineDeployedAt(position),
+                    adjacentCells = cellsAdjacentTo(position)
                 )
         }
     }
 
+    private fun mineDeployedAt(position: Position) =
+        mineDeployment.contains(position)
+
     private fun cellsAdjacentTo(position: Position): List<Cell> {
-        val adjacentCells = ArrayList<Cell>()
+        val positionAbove = position.stepUp()
+        val positionLeft = position.stepLeft()
 
-        cellAbove(position)?.also { adjacentCells.add(it) }
-        cellLeft(position)?.also { adjacentCells.add(it) }
-        return adjacentCells
+        return listOfNotNull(
+            cellsByPosition[positionAbove.stepLeft()],
+            cellsByPosition[positionAbove],
+            cellsByPosition[positionAbove.stepRight()],
+            cellsByPosition[positionLeft]
+        )
     }
-
-    private fun cellAbove(position: Position) =
-        cellsByPosition[position.stepUp()]
-
-    private fun cellLeft(position: Position) =
-        cellsByPosition[position.stepLeft()]
 
     override fun cellAt(position: Position) =
         cellsByPosition[position] ?: throw IndexOutOfBoundsException()
+
+    override fun isCleared(): Boolean {
+        return numberOfRevealedCells() == numberOfSafeCells()
+    }
+
+    private fun numberOfRevealedCells(): Int {
+        return cellsByPosition
+            .count { (_, cell) -> cell.status.mineStatus == MineStatus.REVEALED }
+    }
+
+    private fun numberOfSafeCells() =
+        cellsByPosition.size - mineDeployment.mineCount
 }

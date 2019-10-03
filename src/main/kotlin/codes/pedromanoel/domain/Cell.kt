@@ -21,6 +21,18 @@ class Cell(
             mined -> CellStatus.exploded()
             else -> CellStatus.revealed(adjacentCells.count { it.mined })
         }
+
+        if (surroundingsAreSafe()) {
+            revealConcealedAdjacentCells()
+        }
+    }
+
+    private fun surroundingsAreSafe() = status.adjacentMines == 0
+
+    private fun revealConcealedAdjacentCells() {
+        adjacentCells
+            .filter { it.status.mineStatus == MineStatus.CONCEALED }
+            .forEach(Cell::reveal)
     }
 
     override fun toString() = "Cell($position, $status)"
