@@ -1,6 +1,16 @@
 package codes.pedromanoel.domain
 
-data class CellStatus(val mineStatus: MineStatus, val numberOfSurroundingMines: Int) {
+data class CellStatus(
+    val mineStatus: MineStatus,
+    val numberOfSurroundingMines: Int
+) {
+
+    fun surroundingsAreSafe() =
+        mineStatus == MineStatus.REVEALED && numberOfSurroundingMines == 0
+
+    fun isRevealed() = mineStatus == MineStatus.REVEALED
+    fun isConcealed() = mineStatus == MineStatus.CONCEALED
+    fun isExploded() = mineStatus == MineStatus.EXPLODED
 
     companion object Factory {
         fun concealed(): CellStatus =
@@ -13,3 +23,5 @@ data class CellStatus(val mineStatus: MineStatus, val numberOfSurroundingMines: 
             CellStatus(MineStatus.REVEALED, numberOfSurroundingMines)
     }
 }
+
+enum class MineStatus { CONCEALED, EXPLODED, REVEALED }

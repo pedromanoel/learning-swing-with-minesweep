@@ -41,7 +41,7 @@ class SquareMinefield(
 
     private fun numberOfRevealedCells(): Int {
         return cellsByPosition
-            .count { (_, cell) -> cell.status.mineStatus == MineStatus.REVEALED }
+            .count { (_, cell) -> cell.status.isRevealed() }
     }
 
     private fun numberOfSafeCells() =

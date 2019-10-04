@@ -6,21 +6,22 @@ import org.junit.jupiter.api.Test
 class CellTest {
 
     @Test
-    fun cell_is_created_concealed() {
+    fun a_cell_is_created_concealed() {
         assertThat(Cell(Position.origin()).status).isEqualTo(CellStatus.concealed())
     }
 
     @Test
-    fun cells_are_surrounding_to_one_another() {
+    fun a_cell_surrounds_one_another() {
         val firstCell = Cell(Position.origin())
-        val secondCell = Cell(Position.origin(), surroundingCells = listOf(firstCell))
+        val secondCell =
+            Cell(Position.origin(), surroundingCells = listOf(firstCell))
 
         assertThat(secondCell.surroundingCells).containsExactly(firstCell)
         assertThat(firstCell.surroundingCells).containsExactly(secondCell)
     }
 
     @Test
-    fun reveal_empty_Cell() {
+    fun revealing_an_empty_cell_returns_the_revealed_status() {
         val cell = Cell(Position.origin())
             .also(Cell::reveal)
 
@@ -28,7 +29,7 @@ class CellTest {
     }
 
     @Test
-    fun reveal_empty_cell_counts_surrounding_mines() {
+    fun revealing_an_empty_cell_counts_surrounding_mines() {
         val surroundingCells = listOf(
             Cell(Position.origin(), mined = false),
             Cell(Position.origin(), mined = true),
@@ -39,11 +40,11 @@ class CellTest {
         val cell = Cell(Position.origin(), surroundingCells = surroundingCells)
             .also(Cell::reveal)
 
-        assertThat(cell.status).isEqualTo(CellStatus.revealed(2))
+        assertThat(cell.status.numberOfSurroundingMines).isEqualTo(2)
     }
 
     @Test
-    fun reveals_surrounding_cells_when_surroundings_are_clear() {
+    fun revealing_an_empty_cell_reveals_surroundings_when_safe() {
         val cell = Cell(
             position = Position(1, 1),
             surroundingCells = listOf(
@@ -56,16 +57,33 @@ class CellTest {
 
         val cellStatus = cell
             .surroundingCells
-            .map { it.status.mineStatus }
+            .map { it.status.isRevealed() }
 
-        assertThat(cellStatus).containsExactly(
-            MineStatus.REVEALED,
-            MineStatus.REVEALED
-        )
+        assertThat(cellStatus).containsOnly(true)
     }
 
     @Test
-    fun do_not_reveal_surrounding_cells_when_surroundings_are_not_clear() {
+    fun revealing_a_cell_with_a_mine_does_not_reveal_surroundings() {
+        val cell = Cell(
+            mined = true,
+            position = Position(1, 1),
+            surroundingCells = listOf(
+                Cell(Position(1, 2)),
+                Cell(Position(2, 1))
+            )
+        )
+
+        cell.reveal()
+
+        val cellStatus = cell
+            .surroundingCells
+            .map { it.status.isConcealed() }
+
+        assertThat(cellStatus).containsOnly(true)
+    }
+
+    @Test
+    fun revealing_empty_cell_does_not_clear_surroundings_if_there_is_a_mine() {
         val cell = Cell(
             position = Position(1, 1),
             surroundingCells = listOf(
@@ -78,17 +96,14 @@ class CellTest {
 
         val cellStatus = cell
             .surroundingCells
-            .map { it.status.mineStatus }
+            .map { it.status.isConcealed() }
 
-        assertThat(cellStatus).containsExactly(
-            MineStatus.CONCEALED,
-            MineStatus.CONCEALED
-        )
+        assertThat(cellStatus).containsOnly(true)
 
     }
 
     @Test
-    fun reveal_mined_Cell() {
+    fun revealing_a_cell_with_a_mine_returns_status_exploded() {
         val cell = Cell(Position.origin(), mined = true)
             .also(Cell::reveal)
 

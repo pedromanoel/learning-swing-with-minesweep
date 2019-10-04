@@ -1,5 +1,6 @@
 package codes.pedromanoel.domain
 
+import codes.pedromanoel.test.assertThat
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -32,9 +33,14 @@ class SquareMinefieldTest {
         val middle = minefield.cellAt(Position(1, 2))
         val right = minefield.cellAt(Position(1, 3))
 
-        assertThat(left.surroundingCells).containsExactly(middle)
-        assertThat(middle.surroundingCells).containsExactly(left, right)
-        assertThat(right.surroundingCells).containsExactly(middle)
+        assertThat(left)
+            .isSurroundedByCellsAtPositions(Position(1, 2))
+
+        assertThat(middle)
+            .isSurroundedByCellsAtPositions(Position(1, 1), Position(1, 3))
+
+        assertThat(right)
+            .isSurroundedByCellsAtPositions(Position(1, 2))
     }
 
     @Test
@@ -43,19 +49,11 @@ class SquareMinefieldTest {
 
         val middleCell = minefield.cellAt(Position(2, 2))
 
-        // 1,1  1,2  1,3
-        // 2,1 (2,2) 2,3
-        // 3,1  3,2  3,3
-        assertThat(middleCell.surroundingCells)
-            .containsExactly(
-                minefield.cellAt(Position(1, 1)),
-                minefield.cellAt(Position(1, 2)),
-                minefield.cellAt(Position(1, 3)),
-                minefield.cellAt(Position(2, 1)),
-                minefield.cellAt(Position(2, 3)),
-                minefield.cellAt(Position(3, 1)),
-                minefield.cellAt(Position(3, 2)),
-                minefield.cellAt(Position(3, 3))
+        assertThat(middleCell)
+            .isSurroundedByCellsAtPositions(
+                Position(1, 1), Position(1, 2), Position(1, 3),
+                Position(2, 1), /*   (2,2)   */ Position(2, 3),
+                Position(3, 1), Position(3, 2), Position(3, 3)
             )
     }
 
@@ -68,21 +66,9 @@ class SquareMinefieldTest {
             dimensions = dimensions
         )
 
-        val mineStatus = listOf(
-            minefield.cellAt(Position(1, 1)),
-            minefield.cellAt(Position(1, 2)),
-            minefield.cellAt(Position(2, 1)),
-            minefield.cellAt(Position(2, 2))
-        )
-            .onEach(Cell::reveal)
-            .map { it.status.mineStatus }
-
-        assertThat(mineStatus).containsExactly(
-            MineStatus.EXPLODED,
-            MineStatus.REVEALED,
-            MineStatus.REVEALED,
-            MineStatus.EXPLODED
-        )
+        assertThat(minefield)
+            .hasMinesAtPositions(Position(1, 1), Position(2, 2))
+            .hasEmptyCellsAtPositions(Position(1, 2), Position(2, 1))
     }
 
     @Test
@@ -94,23 +80,22 @@ class SquareMinefieldTest {
         // 2 | 0 1 1
         // 3 | 0 1 *
 
-        val minefield = SquareMinefield(
-            dimensions = Dimensions(3, 3),
-            mineDeployment = MineDeployment(listOf(Position(3, 3)))
-        )
+        val dimensions = Dimensions(3, 3)
+        val mineDeployment = MineDeployment(listOf(Position(3, 3)))
 
-        assertThat(minefield.isCleared())
-            .describedAs("minefield starts uncleared")
-            .isFalse()
+        val minefield = SquareMinefield(dimensions, mineDeployment)
+        assertThat(minefield)
+            .describedAs("starts not cleared")
+            .isNotCleared()
 
         minefield.cellAt(Position(2, 2)).reveal()
-        assertThat(minefield.isCleared())
-            .describedAs("minefield uncleared after one cell revealed")
-            .isFalse()
+        assertThat(minefield)
+            .describedAs("not cleared after (2, 2) is revealed")
+            .isNotCleared()
 
         minefield.cellAt(Position(1, 1)).reveal()
-        assertThat(minefield.isCleared())
-            .describedAs("minefield cleared after all empty cells revealed")
-            .isTrue()
+        assertThat(minefield)
+            .describedAs("cleared after (1, 1) is revealed")
+            .isCleared()
     }
 }

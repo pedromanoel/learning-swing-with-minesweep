@@ -6,14 +6,21 @@ class Cell(
     private val mined: Boolean = false
 ) {
     var status = CellStatus.concealed()
+        private set
 
-    val surroundingCells: List<Cell> get() = _surroundingCells
+    val surroundingCells: List<Cell>
+        get() = _surroundingCells.toList()
 
-    private val _surroundingCells: ArrayList<Cell> = ArrayList()
+    private val _surroundingCells: MutableList<Cell> =
+        surroundingCells.toMutableList()
 
     init {
-        this._surroundingCells.addAll(surroundingCells)
-        this._surroundingCells.forEach { it._surroundingCells.add(this) }
+        addSelfToSurroundingCells()
+    }
+
+    private fun addSelfToSurroundingCells() {
+        this._surroundingCells
+            .forEach { other -> other._surroundingCells.add(this) }
     }
 
     fun reveal() {
@@ -22,16 +29,14 @@ class Cell(
             else -> CellStatus.revealed(surroundingCells.count { it.mined })
         }
 
-        if (surroundingsAreSafe()) {
+        if (status.surroundingsAreSafe()) {
             revealConcealedSurroundingCells()
         }
     }
 
-    private fun surroundingsAreSafe() = status.numberOfSurroundingMines == 0
-
     private fun revealConcealedSurroundingCells() {
         surroundingCells
-            .filter { it.status.mineStatus == MineStatus.CONCEALED }
+            .filter { it.status.isConcealed() }
             .forEach(Cell::reveal)
     }
 
