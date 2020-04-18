@@ -1,7 +1,7 @@
 package codes.pedromanoel.domain
 
 class SquareMinefield(
-    dimensions: Dimensions,
+    override val dimensions: Dimensions,
     val mineDeployment: MineDeployment = MineDeployment.empty()
 ) : Minefield {
     private val cellsByPosition: HashMap<Position, Cell> = HashMap()
